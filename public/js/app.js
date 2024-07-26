@@ -140,13 +140,14 @@ const logIn = () => {
         let password = prompt("enter your password")
         if(database.find(e => e.password == password)){
             alert("You are Loged In")
+            return (email)
         }else{
             alert("Password is incorrect")
         }
     }else{
         alert("Email is incorrect")
     }
-    return (email)
+    // return (email)
 }
 
 const changePassword = () => {
@@ -207,9 +208,10 @@ const loan = (userEmail) => {
     let userLoan = prompt("how much would like to take as a loan?")
     while(userLoan >= maxLoan){
         newloan = prompt("unfortunatly you can take  loan up to 20% of your account balance, please choose another number")
+        userLoan = newloan
     }
     userLoan = newloan
-    database[idx].balance += userLoan
+    database[idx].balance += parseInt(userLoan)
     alert("You have take a loan of amount " + userLoan + " now your balance is " + database[idx].balance)
 }
 
@@ -237,7 +239,7 @@ const create = () => {
                 }else if(logedUser == "deposit"){
                     deposit(isLogedIn)
                 }else if(logedUser === "take a loan"){
-
+                    loan(isLogedIn)
                 }
             }
             
