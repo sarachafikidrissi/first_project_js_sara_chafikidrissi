@@ -83,16 +83,18 @@ const checkSpecialCharacters = (str) => {
 
 //* create database where users information will be stored
 
-let database = [{name: "hajar", email: "hajar@demo.com", age: 17, password: "12345", balance : 2000, loan: 200}]
+let database = [{name: "hajar", email: "hajar@demo.com", age: 17, password: "12345", balance : 2200, loan: 0, investedMoney: 1000, investpercent: 120}]
 
 class Client{
-    constructor(name, email, age, password, balance, loan){
+    constructor(name, email, age, password, balance, loan, investedMoney, investpercent){
         this.name = name
         this.email = email
         this.age = age
         this.password = password
         this.balance = 2000
         this.loan = loan
+        this.investedMoney = investedMoney
+        this.investpercent = investpercent
     }
 }
 
@@ -146,10 +148,15 @@ const logIn = () => {
             if(database[idx].loan != 0){
                 let beforebalance = database[idx].balance
                 let credit = (database[idx].balance * 10) / 100
-                let loan = database[idx].loan
                 database[idx].balance -= credit
                 database[idx].loan -= credit
                 console.log(`balance was ${beforebalance} lost ${credit} stays ${database[idx].loan} and now balance is ${database[idx].balance}`);
+            }
+            if(database[idx].investedMoney != 0 && database[idx].investpercent < 120){
+                let newbalance = (database[idx].investedMoney * 20) / 100
+                database[idx].balance += newbalance
+                database[idx].investpercent += 20
+
             }
             return (email)
         }else{
@@ -210,6 +217,8 @@ const deposit = (userEmail) => {
     
 }
 
+
+
 const loan = (userEmail) => {
     let idx = database.findIndex(e => e.email == userEmail)
     let userBalance = database[idx].balance
@@ -225,6 +234,18 @@ const loan = (userEmail) => {
     alert("You have take a loan of amount " + userLoan + " now your balance is " + database[idx].balance)
 
     return({userLoan: userLoan, email: userEmail})
+}
+
+const invest = (userEmail) =>{
+    let idx = database.findIndex(e => e.email == userEmail)
+    let investamount = prompt("how would you like to invest")
+    while(investamount > database[idx].balance){
+        let newinvestamount = prompt("your balance is less than the amount you want to invest")
+        investamount = newinvestamount
+    }
+    database[idx].balance -= parseInt(investamount)
+    database[idx].investedMoney += parseInt(investamount)
+    
 }
 
 const create = () => {
@@ -252,6 +273,8 @@ const create = () => {
                     deposit(isLogedIn)
                 }else if(logedUser === "take a loan"){
                     loan(isLogedIn)
+                }else if(logedUser == "invest"){
+                    invest(isLogedIn)
                 }
             }
             
