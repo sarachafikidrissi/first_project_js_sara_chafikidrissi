@@ -83,15 +83,16 @@ const checkSpecialCharacters = (str) => {
 
 //* create database where users information will be stored
 
-let database = [{name: "hajar", email: "hajar@demo.com", age: 17, password: "12345", balance : 2000}]
+let database = [{name: "hajar", email: "hajar@demo.com", age: 17, password: "12345", balance : 2000, loan: 200}]
 
 class Client{
-    constructor(name, email, age, password, balance){
+    constructor(name, email, age, password, balance, loan){
         this.name = name
         this.email = email
         this.age = age
         this.password = password
         this.balance = 2000
+        this.loan = loan
     }
 }
 
@@ -140,6 +141,16 @@ const logIn = () => {
         let password = prompt("enter your password")
         if(database.find(e => e.password == password)){
             alert("You are Loged In")
+            //* check if this user has a loan
+            let idx = database.findIndex(e => e.email == email)
+            if(database[idx].loan != 0){
+                let beforebalance = database[idx].balance
+                let credit = (database[idx].balance * 10) / 100
+                let loan = database[idx].loan
+                database[idx].balance -= credit
+                database[idx].loan -= credit
+                console.log(`balance was ${beforebalance} lost ${credit} stays ${database[idx].loan} and now balance is ${database[idx].balance}`);
+            }
             return (email)
         }else{
             alert("Password is incorrect")
@@ -201,7 +212,6 @@ const deposit = (userEmail) => {
 
 const loan = (userEmail) => {
     let idx = database.findIndex(e => e.email == userEmail)
-
     let userBalance = database[idx].balance
     let maxLoan = (userBalance * 20) / 100 
     let userLoan = prompt("how much would like to take as a loan?")
@@ -211,7 +221,10 @@ const loan = (userEmail) => {
     }
     // userLoan = newloan
     database[idx].balance += parseInt(userLoan)
+    database[idx].loan = parseInt(userLoan)
     alert("You have take a loan of amount " + userLoan + " now your balance is " + database[idx].balance)
+
+    return({userLoan: userLoan, email: userEmail})
 }
 
 const create = () => {
