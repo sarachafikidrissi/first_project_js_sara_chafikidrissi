@@ -1,4 +1,3 @@
-//~ helper functions
 // to check user choice
 const check = (param) => {
     let choices = ["sign up", "login", "change password"]
@@ -72,14 +71,17 @@ const checkPwd = (password) => {
     }
     
 
+
 }
 
+//check special characters
 const checkSpecialCharacters = (str) => {
     let specialCharacters = /[!@#$%^&*()\-+={}[\]:;"'<>,.?\/|\\^0-9]/
     if(specialCharacters.test(str)){
         return true
     }
 }
+
 
 //* create database where users information will be stored
 
@@ -101,39 +103,60 @@ class Client{
 const signUp = () => {
         //* Name
         let name = prompt("enter a name")
-        name = nameCheck(name).name
-        while(name.length < 5 || checkSpecialCharacters(name) || name == ""){
-            nameagain = prompt("enter a name")
-            name = nameCheck(nameagain).name
+        if(name == "exit"){
+            create()
+        }else{
+            name = nameCheck(name).name
+            while(name.length < 5 || checkSpecialCharacters(name) || name == ""){
+                nameagain = prompt("enter a name")
+                name = nameCheck(nameagain).name
+            }
         }
         //* Email
         let email = prompt("enter a email")
-        while(checkEmailAt(email) || email.length < 10 || uniqueEmail(email) || email == ""){
-            emailagain = prompt("enter email")
-            email = emailCheck(emailagain)
+        if(email == "exit"){
+            create()
+        }else{
+            while(checkEmailAt(email) || email.length < 10 || uniqueEmail(email) || email == ""){
+                emailagain = prompt("enter email")
+                email = emailCheck(emailagain)
+            }
+            email = emailCheck(email)
         }
-        email = emailCheck(email)
 
         //* Age
         let age = prompt("enter a age")
-        while(checkAge(age) || age.length == 0 || age.length >= 3 ){
-            let ageagin = prompt("enter your age")
-            age = ageagin
+        if(age == "exit"){
+            create()
+        }else{
+            while(checkAge(age) || age.length == 0 || age.length >= 3 ){
+                let ageagin = prompt("enter your age")
+                age = ageagin
+            }
         }
         let password = prompt("enter a password")
-        while(checkPwd(password) == true){
-            let passwordagain = prompt("enter your password")
-            password = passwordagain
+        if(password == "exit"){
+            create()
+        }else{
+            while(checkPwd(password) == true){
+                let passwordagain = prompt("enter your password")
+                password = passwordagain
+            }
+            password = checkPwd(password)
         }
-        password = checkPwd(password)
         let confirmPassword = prompt("confirm you password")
         if(confirmPassword != password){
             alert("password incorrect , unfortunatly you are blocked")
-        }else{
-            let clientInfo = new Client(name, email, age, password)
+        }else if(confirmPassword == "exit"){
+            create()
+        }
+        else{
+            let clientInfo = new Client(name, email, parseInt(age), password)
             database.push(clientInfo)
             alert("Your account have been created")
         }
+
+        
 
     }
 
@@ -185,7 +208,7 @@ const changePassword = () => {
 
 
 const logout = () => {
-    alert("you are loged out succesfully")
+    console.log("you are loged out succesfully")
     create()
 }
 
@@ -194,15 +217,14 @@ const logout = () => {
 const withdraw = (userEmail) => {
     let idx = database.findIndex(e => e.email == userEmail)
     let money = prompt("how much woul you like to withdraw?")
-    {
         while(money > database[idx].balance){
             let newmoney = prompt("solde insufisant, choose another amount to withdraw")
             money = newmoney
         }
         let withdrawMoney = money
         database[idx].balance -= withdrawMoney
-        alert("You have withdraw " + withdrawMoney + " now your balance is " + database[idx].balance)
-    }
+        console.log(database[idx].name + "You have withdraw " + withdrawMoney + " now your balance is " + database[idx].balance)
+    return (withdrawMoney)
 }
 const deposit = (userEmail) => {
     let amount = prompt("how much would you like to deposit?")
@@ -213,8 +235,8 @@ const deposit = (userEmail) => {
     let depositAmount = amount
     let client = database.findIndex(e => e.email == userEmail)
     database[client].balance += parseInt(depositAmount)
-    alert("You have deposit " + depositAmount + " now your balance is " + database[client].balance)
-    
+    console.log(database[client].name + " has deposit " + depositAmount + " now your balance is " + database[client].balance)
+    return(depositAmount)
 }
 
 
@@ -231,8 +253,7 @@ const loan = (userEmail) => {
     // userLoan = newloan
     database[idx].balance += parseInt(userLoan)
     database[idx].loan = parseInt(userLoan)
-    alert("You have take a loan of amount " + userLoan + " now your balance is " + database[idx].balance)
-
+    console.log(database[idx].name + " take a loan of amount " + userLoan + " now your balance is " + database[idx].balance)
     return({userLoan: userLoan, email: userEmail})
 }
 
@@ -245,6 +266,8 @@ const invest = (userEmail) =>{
     }
     database[idx].balance -= parseInt(investamount)
     database[idx].investedMoney += parseInt(investamount)
+    console.log(`${database[idx].name} has invest ${investamount}`);
+    return (investamount)
     
 }
 
@@ -262,26 +285,54 @@ const create = () => {
             //^user choose to login
             let isLogedIn = logIn()
 
+            let usernameidx = database.findIndex(e => e.email == isLogedIn)
+            let username = database[usernameidx].name
+
             if(isLogedIn){
                 let logedUser = prompt("choose an action from these options: (logout, withdraw money, deposit money, take a loan, invest)")
                 if(logedUser == "logout"){
                     logout()
+                    return (`${username} has deposit ${logout()}`)
+                    
+                }else if( logedUser == "exit"){
+                    create()
                 }
-                else if(logedUser == "withdraw money"){
-                    withdraw(isLogedIn)
-                }else if(logedUser == "deposit"){
-                    deposit(isLogedIn)
-                }else if(logedUser === "take a loan"){
-                    loan(isLogedIn)
-                }else if(logedUser == "invest"){
-                    invest(isLogedIn)
+                if(logedUser == "withdraw money"){
+                    return withdraw(isLogedIn)
+                    
+                }else if( logedUser == "exit"){
+                    create()
                 }
+                if(logedUser == "deposit"){
+                    return deposit(isLogedIn)
+
+                }else if( logedUser == "exit"){
+                    create()
+                }
+                if(logedUser === "take a loan"){
+                    return loan(isLogedIn)
+
+                }else if( logedUser == "exit"){
+                    create()
+                }
+                if(logedUser == "invest"){
+                    return invest(isLogedIn)
+
+                }else if( logedUser == "exit"){
+                    create()
+                }
+                
             }
             
         }else if(userChoice == "change password"){
             changePassword()
         }
+    }else if(userChoice == "exit"){
+        create()
     }
+
+
+    
    
 }
 
