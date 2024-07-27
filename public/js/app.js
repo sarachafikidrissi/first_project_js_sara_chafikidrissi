@@ -3,12 +3,10 @@ const check = (param) => {
     let choices = ["sign up", "login", "change password"]
     if(choices.includes(param)){
         return 1
+    }else{
+        create()
     }
-    // }else{
-    //     alert(`our bank doesn't offer this choice : ${param}`)
-    // }
 }
-
 
 // to check name
 const nameCheck = (name) => {
@@ -64,13 +62,14 @@ const checkAge = (age) => {
 const checkPwd = (password) => {
     let pwdChecked = password.trim()
     let pwdHasSpace = pwdChecked.split(' ').find(e => e == " ")
-    if (pwdHasSpace || pwdChecked.length < 7){
+    let hasSpecialCharacter = checkPasswordSpecialCharacters(pwdChecked)
+    console.log(hasSpecialCharacter);
+    if (pwdHasSpace || pwdChecked.length < 7 || !hasSpecialCharacter){
         return true
     }else{
         return pwdChecked
     }
     
-
 
 }
 
@@ -82,6 +81,12 @@ const checkSpecialCharacters = (str) => {
     }
 }
 
+const checkPasswordSpecialCharacters = (str) => {
+    let specialCharacters = /[#@\-+\*/]/
+    if(specialCharacters.test(str)){
+        return true
+    }
+}
 
 //* create database where users information will be stored
 
@@ -206,13 +211,10 @@ const changePassword = () => {
     }
 }
 
-
 const logout = () => {
     console.log("you are loged out succesfully")
     create()
 }
-
-
 
 const withdraw = (userEmail) => {
     let idx = database.findIndex(e => e.email == userEmail)
@@ -238,8 +240,6 @@ const deposit = (userEmail) => {
     console.log(database[client].name + " has deposit " + depositAmount + " now your balance is " + database[client].balance)
     return(depositAmount)
 }
-
-
 
 const loan = (userEmail) => {
     let idx = database.findIndex(e => e.email == userEmail)
@@ -337,17 +337,8 @@ const create = () => {
 }
 
 create()
-
-
 console.log(database);
 
-// let client1 = new Client("hajar", "hajar@email.com", 18, "12345")
-
-
-// console.log(client1);
-
-// database.push(client1)
-// console.log(database);
 
 
 
